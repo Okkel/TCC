@@ -9,6 +9,8 @@ from igraph import *
 from LinearThreshold import LTM
 import time
 import numpy as np
+import pickle
+
 
 
 class Ag():
@@ -23,25 +25,34 @@ class Ag():
         self.generation_cont = 0
 
         try:
-            my_list = []
-            with open('sementes.txt', 'r') as f:
-                for line in f:
-                    x = line.replace("[", "")
-                    x = x.replace("]", "")
-                    x = x.replace("\n", "")
-                    x = x.replace(",", " ")
-                    my_list.append(x)
+            with open('sementes.txt', 'rb') as f:
+                all_lines = pickle.load(f)
+                if len(all_lines) == 1:
+                    self.population.append([all_lines, 0])
+                else:
+                    print(len(all_lines),' conjunto(s) de sementes encontrado(s)')
+                    for i in all_lines:
+                        self.population.append([i, 0])
 
-            all_lines = [[int(num) for num in line.split()]
-                         for line in my_list]
-            if len(all_lines) == 1:
-                self.population.append([all_lines, 0])
-                print "all_lines ", len(all_lines)
-            else:
-                print "all_lines maiorzinha: ", len(all_lines)
-
-                for i in all_lines:
-                    self.population.append([i, 0])
+            # my_list = []
+            # with open('sementes.txt', 'r') as f:
+            #     for line in f:
+            #         x = line.replace("[", "")
+            #         x = x.replace("]", "")
+            #         x = x.replace("\n", "")
+            #         x = x.replace(",", " ")
+            #         my_list.append(x)
+            #
+            # all_lines = [[int(num) for num in line.split()]
+            #              for line in my_list]
+            # if len(all_lines) == 1:
+            #     self.population.append([all_lines, 0])
+            #     print "all_lines ", len(all_lines)
+            # else:
+            #     print "all_lines maiorzinha: ", len(all_lines)
+            #
+            #     for i in all_lines:
+            #         self.population.append([i, 0])
         except BaseException:
             print "Arquivo de sementes (sementes.txt) nao enontrado \n nenhuma perturbacao da populacao inicial sera feita"
 
