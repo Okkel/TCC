@@ -10,11 +10,12 @@ from LinearThreshold import LTM
 import time
 import numpy as np
 import pickle
+import pandas as pd
 
 
 
 class Ag():
-    def __init__(self, g, len_gen, len_population, mutation, times):
+    def __init__(self, g, len_gen, len_population, mutation, times, seeds):
         self.g = g
         self.len_gen = len_gen
         self.len_population = len_population
@@ -23,16 +24,18 @@ class Ag():
         self.best_fit = 0
         self.times = times
         self.generation_cont = 0
+        self.population.append([seeds, 0])
 
-        try:
-            with open('sementes.txt', 'rb') as f:
-                all_lines = pickle.load(f)
-                if len(all_lines) == 1:
-                    self.population.append([all_lines, 0])
-                else:
-                    print(len(all_lines),' conjunto(s) de sementes encontrado(s)')
-                    for i in all_lines:
-                        self.population.append([i, 0])
+
+        # try:
+        #     with open('sementes.txt', 'rb') as f:
+        #         all_lines = pickle.load(f)
+        #         if len(all_lines) == 1:
+        #             self.population.append([all_lines, 0])
+        #         else:
+        #             print(len(all_lines),' conjunto(s) de sementes encontrado(s)')
+        #             for i in all_lines:
+        #                 self.population.append([i, 0])
 
             # my_list = []
             # with open('sementes.txt', 'r') as f:
@@ -53,8 +56,8 @@ class Ag():
             #
             #     for i in all_lines:
             #         self.population.append([i, 0])
-        except BaseException:
-            print "Arquivo de sementes (sementes.txt) nao enontrado \n nenhuma perturbacao da populacao inicial sera feita"
+        # except BaseException:
+        #     print "Arquivo de sementes (sementes.txt) nao enontrado \n nenhuma perturbacao da populacao inicial sera feita"
 
     def gen(self):  # creating a gen
         gen = random.sample(range(self.g.vcount()), self.len_gen)
@@ -226,20 +229,38 @@ if sys.argv[2] == 'd':
     g = Graph.Read_Ncol(sys.argv[1], directed=True)
 elif sys.argv[2] == 'n':
     g = Graph.Read_Ncol(sys.argv[1], directed=False)
+try:
+    with open('sementes.txt', 'rb') as f:
+        all_lines = pickle.load(f)
 
-t = []
-arq = open("fitness_evolution_puro" + sys.argv[1].split('.')[0] + ".txt", "w")
+except BaseException:
+    print "Arquivo de sementes (sementes.txt) nao enontrado \n nenhuma perturbacao da populacao inicial sera feita"
 
-begin = time.time()
-for i in range(10):
-    print "\n\n", i, "\n\n"
-    a = Ag(g, 50, 50, 0.1, 100)
-    r = a.run()
-    arq.write(str(r[0]))  # crescimento de influencia em procentagem
-    arq.write("\n")
-    arq.write(str(r[1]))  # sementes que alcancaram melhor resultado
-    arq.write("\n")
-end = time.time()
-print "melhor resultado encontrado:\n", r, "tempo:", end - begin, "\n\n"
 
-arq.close()
+for li in range(len(all_lines)):
+
+    fit_evolution = {}
+    seeds_response = {}
+
+    arq = open("fitness_evolution" + sys.argv[1].split('.')[0] + "_medida_"+ str(li) +".txt", "w")
+
+    begin = time.time()
+    for i in range(10):
+        print "\n\n", i, "\n\n"
+        a = Ag(g, 50, 50, 0.1, 100, all_lines[li])
+        r = a.run()
+        arq.write(str(r[0]))  # crescimento de influencia em procentagem
+        arq.write("\n")
+        arq.write(str(r[1]))  # sementes que alcancaram melhor resultado
+        arq.write("\n")
+        fit_evolution[i] = r[0]
+        seeds_response[i] = r[1][0] # sementes: [[semntes]. fitness] pegando apenas as sementes
+    end = time.time()
+    df = pd.DataFrame(data=fit_evolution)
+    df.to_csv("fitness_evolution" + sys.argv[1].split('.')[0] + "_medida_"+ str(li) +".csv",sep=';', encoding='utf-8')
+    df2 = pd.DataFrame(data=seeds_response)
+    df2.to_csv("seeds_response" + sys.argv[1].split('.')[0] + "_medida_"+ str(li) +".csv",sep=';', encoding='utf-8')
+
+    print "melhor resultado encontrado:\n", r, "tempo:", end - begin, "\n\n"
+
+    arq.close()
