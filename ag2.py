@@ -245,7 +245,7 @@ for li in range(len(all_lines)):
     arq = open("fitness_evolution" + sys.argv[1].split('.')[0] + "_medida_"+ str(li) +".txt", "w")
 
     begin = time.time()
-    for i in range(10):
+    for i in range(1):
         print "\n\n", i, "\n\n"
         a = Ag(g, 50, 50, 0.1, 100, all_lines[li])
         r = a.run()
@@ -256,6 +256,8 @@ for li in range(len(all_lines)):
         fit_evolution[i] = r[0]
         seeds_response[i] = r[1][0] # sementes: [[semntes]. fitness] pegando apenas as sementes
     end = time.time()
+    print(fit_evolution)
+    print(seeds_response)
     df = pd.DataFrame(data=fit_evolution)
     df.to_csv("fitness_evolution" + sys.argv[1].split('.')[0] + "_medida_"+ str(li) +".csv",sep=';', encoding='utf-8')
     df2 = pd.DataFrame(data=seeds_response)
