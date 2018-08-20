@@ -24,9 +24,10 @@ class Ag():
         self.mutation_chance = mutation
         self.population = []
         self.best_fit = 0
-        self.times = times
+        self.times = 3
         self.generation_cont = 0
         self.population.append([seeds, 0])
+        print '\n\n','len_gen',self.len_gen,'len_population',self.len_population,'mutation_chance',self.mutation_chance,'times',self.times
 
 
         # try:
@@ -240,11 +241,12 @@ except BaseException:
     print "Arquivo de sementes (sementes.txt) nao enontrado \n nenhuma perturbacao da populacao inicial sera feita"
 
 
-for li in range(len(all_lines)-(len(all_lines)-2)):
+# for li in range(len(all_lines)):
+for li in range(2):
     print "\n\n executando conjunto", li
-
     fit_evolution = {}
     seeds_response = {}
+
     if not os.path.exists("fitness_evolution" + sys.argv[1].split('.')[0]):
         os.makedirs("fitness_evolution" + sys.argv[1].split('.')[0])
     arq = open("fitness_evolution" + sys.argv[1].split('.')[0] + "/fitness_evolution" + sys.argv[1].split('.')[0] + "_medida_"+ str(li) +".txt", "w")
@@ -262,14 +264,16 @@ for li in range(len(all_lines)-(len(all_lines)-2)):
         seeds_response[i] = r[1][0] # sementes: [[semntes]. fitness] pegando apenas as sementes
 
     end = time.time()
-    print('fit_evolution \n',fit_evolution)
-    print('--'*15)
-    print('seeds_response \n',seeds_response)
+    print '\n fit_evolution \n',fit_evolution
+    print '--'*15
+    print 'seeds_response \n',seeds_response
     df = pd.DataFrame(data=fit_evolution)
     df.to_csv("fitness_evolution" + sys.argv[1].split('.')[0] +"/fitness_evolution" + sys.argv[1].split('.')[0] + "_medida_"+ str(li) +".csv",sep=';', encoding='utf-8')
     df2 = pd.DataFrame(data=seeds_response)
     df2.to_csv("fitness_evolution" + sys.argv[1].split('.')[0] +"/seeds_response" + sys.argv[1].split('.')[0] + "_medida_"+ str(li) +".csv",sep=';', encoding='utf-8')
 
     print "melhor resultado encontrado:\n", r, "tempo:", end - begin, "\n\n"
+    fit_evolution = {}
+    seeds_response = {}
 
     arq.close()
