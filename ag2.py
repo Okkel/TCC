@@ -11,6 +11,8 @@ import time
 import numpy as np
 import pickle
 import pandas as pd
+import os
+
 
 
 
@@ -243,8 +245,9 @@ for li in range(len(all_lines)-(len(all_lines)-2)):
 
     fit_evolution = {}
     seeds_response = {}
-
-    arq = open("fitness_evolution" + sys.argv[1].split('.')[0] + "_medida_"+ str(li) +".txt", "w")
+    if not os.path.exists("fitness_evolution" + sys.argv[1].split('.')[0]):
+        os.makedirs("fitness_evolution" + sys.argv[1].split('.')[0])
+    arq = open("fitness_evolution" + sys.argv[1].split('.')[0] + "/fitness_evolution" + sys.argv[1].split('.')[0] + "_medida_"+ str(li) +".txt", "w")
 
     begin = time.time()
     for i in range(2):
@@ -263,9 +266,9 @@ for li in range(len(all_lines)-(len(all_lines)-2)):
     print('--'*15)
     print('seeds_response \n',seeds_response)
     df = pd.DataFrame(data=fit_evolution)
-    df.to_csv("fitness_evolution" + sys.argv[1].split('.')[0] + "_medida_"+ str(li) +".csv",sep=';', encoding='utf-8')
+    df.to_csv("fitness_evolution" + sys.argv[1].split('.')[0] +"/fitness_evolution" + sys.argv[1].split('.')[0] + "_medida_"+ str(li) +".csv",sep=';', encoding='utf-8')
     df2 = pd.DataFrame(data=seeds_response)
-    df2.to_csv("seeds_response" + sys.argv[1].split('.')[0] + "_medida_"+ str(li) +".csv",sep=';', encoding='utf-8')
+    df2.to_csv("fitness_evolution" + sys.argv[1].split('.')[0] +"/seeds_response" + sys.argv[1].split('.')[0] + "_medida_"+ str(li) +".csv",sep=';', encoding='utf-8')
 
     print "melhor resultado encontrado:\n", r, "tempo:", end - begin, "\n\n"
 
