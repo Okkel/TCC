@@ -232,12 +232,14 @@ elif sys.argv[2] == 'n':
 try:
     with open('sementes.txt', 'rb') as f:
         all_lines = pickle.load(f)
+        print len(all_lines)," conjuntos de sementes"
 
 except BaseException:
     print "Arquivo de sementes (sementes.txt) nao enontrado \n nenhuma perturbacao da populacao inicial sera feita"
 
 
-for li in range(len(all_lines)):
+for li in range(len(all_lines)-(len(all_lines)-2)):
+    print "\n\n executando conjunto", li
 
     fit_evolution = {}
     seeds_response = {}
@@ -245,9 +247,9 @@ for li in range(len(all_lines)):
     arq = open("fitness_evolution" + sys.argv[1].split('.')[0] + "_medida_"+ str(li) +".txt", "w")
 
     begin = time.time()
-    for i in range(1):
+    for i in range(2):
         print "\n\n", i, "\n\n"
-        a = Ag(g, 50, 50, 0.1, 100, all_lines[li])
+        a = Ag(g, 50, 50, 0.1, 3, all_lines[li])
         r = a.run()
         arq.write(str(r[0]))  # crescimento de influencia em procentagem
         arq.write("\n")
@@ -255,9 +257,11 @@ for li in range(len(all_lines)):
         arq.write("\n")
         fit_evolution[i] = r[0]
         seeds_response[i] = r[1][0] # sementes: [[semntes]. fitness] pegando apenas as sementes
+
     end = time.time()
-    print(fit_evolution)
-    print(seeds_response)
+    print('fit_evolution \n',fit_evolution)
+    print('--'*15)
+    print('seeds_response \n',seeds_response)
     df = pd.DataFrame(data=fit_evolution)
     df.to_csv("fitness_evolution" + sys.argv[1].split('.')[0] + "_medida_"+ str(li) +".csv",sep=';', encoding='utf-8')
     df2 = pd.DataFrame(data=seeds_response)
