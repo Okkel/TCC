@@ -24,7 +24,7 @@ class Ag():
         self.mutation_chance = mutation
         self.population = []
         self.best_fit = 0
-        self.times = 3
+        self.times = times
         self.generation_cont = 0
         self.population.append([seeds, 0])
         print '\n\n','len_gen',self.len_gen,'len_population',self.len_population,'mutation_chance',self.mutation_chance,'times',self.times
@@ -83,7 +83,8 @@ class Ag():
             # if self.seeds:
             #     self.population.append(self.seeds)
 
-            print "primeira populacao criada_______________________________________________"
+            print "primeira populacao criada___________________________________"
+            self.generation_cont += 1
 
             return
 
@@ -191,16 +192,18 @@ class Ag():
         saida = []
         # arq = open("fitness_evolution.txt","w")
 
+        # generation 1
         self.new_population()
         self.fitness()
 
         best_fit_of_iteration = self.best()
         # calcula porcentagem de nos ativados
-        saida.append(str((100.0 * (best_fit_of_iteration)) / self.g.vcount()))
+        saida.append((100.0 * (best_fit_of_iteration)) / float(self.g.vcount()))
         # arq.write(str((100.0*(best_fit_of_iteration))/self.g.vcount())+"\n")
 
+        # generation 2
         self.new_population(1)
-        cont = 2
+
 
         while True:
 
@@ -208,17 +211,19 @@ class Ag():
             self.fitness()
 
             self.best_fit = self.best()
-            saida.append(
-                str((100.0 * (best_fit_of_iteration)) / self.g.vcount()))
+            saida.append((100.0 * (best_fit_of_iteration)) / float(self.g.vcount()))
             # arq.write(str((100.0*(self.best_fit))/self.g.vcount())+"\n")
 
-            if best_fit_of_iteration < self.best_fit or cont < self.times:
+            if self.generation_cont < self.times:
 
                 print "melhor da populacao", best_fit_of_iteration, "melhor geral", self.best_fit
-                best_fit_of_iteration = self.best_fit
+                if best_fit_of_iteration < self.best_fit:
+                    best_fit_of_iteration = self.best_fit
+                else :
+                    self.best_fit = best_fit_of_iteration
                 # print "nova populacao criada____________________________________",len(self.population)
                 self.new_population(1)
-                cont += 1
+                # cont += 1
             else:
                 # arq.close()
                 # print "End, best_fit", self.best_fit#,"melhor da
@@ -241,8 +246,8 @@ except BaseException:
     print "Arquivo de sementes (sementes.txt) nao enontrado \n nenhuma perturbacao da populacao inicial sera feita"
 
 
-# for li in range(len(all_lines)):
-for li in range(2):
+for li in range(len(all_lines)):
+# for li in range(2):
     print "\n\n executando conjunto", li
     fit_evolution = {}
     seeds_response = {}
@@ -252,22 +257,23 @@ for li in range(2):
     arq = open("fitness_evolution" + sys.argv[1].split('.')[0] + "/fitness_evolution" + sys.argv[1].split('.')[0] + "_medida_"+ str(li) +".txt", "w")
 
     begin = time.time()
-    for i in range(2):
+    for i in range(10):
         print "\n\n", i, "\n\n"
-        a = Ag(g, 50, 50, 0.1, 3, all_lines[li])
+        a = Ag(g, 50, 50, 0.1, 10, all_lines[li])
         r = a.run()
         arq.write(str(r[0]))  # crescimento de influencia em procentagem
         arq.write("\n")
         arq.write(str(r[1]))  # sementes que alcancaram melhor resultado
         arq.write("\n")
         fit_evolution[i] = r[0]
-        seeds_response[i] = r[1][0] # sementes: [[semntes]. fitness] pegando apenas as sementes
+        seeds_response[i] = r[1][0] # sementes: [[sementes]. fitness] pegando apenas as sementes
 
     end = time.time()
     print '\n fit_evolution \n',fit_evolution
     print '--'*15
     print 'seeds_response \n',seeds_response
     df = pd.DataFrame(data=fit_evolution)
+    print df.head()
     df.to_csv("fitness_evolution" + sys.argv[1].split('.')[0] +"/fitness_evolution" + sys.argv[1].split('.')[0] + "_medida_"+ str(li) +".csv",sep=';', encoding='utf-8')
     df2 = pd.DataFrame(data=seeds_response)
     df2.to_csv("fitness_evolution" + sys.argv[1].split('.')[0] +"/seeds_response" + sys.argv[1].split('.')[0] + "_medida_"+ str(li) +".csv",sep=';', encoding='utf-8')
