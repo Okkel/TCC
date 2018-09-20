@@ -1,7 +1,7 @@
 # coding: utf-8
 # user/bin/python
 
-#code by Arthur Rodrigues da Silva
+# code by Arthur Rodrigues da Silva
 import random
 import sys
 import copy
@@ -9,10 +9,13 @@ from igraph import *
 from LinearThreshold import LTM
 import time
 import numpy as np
+import pickle
+import pandas as pd
+import os
 
 
 class Ag():
-    def __init__(self,g,len_gen,len_population,mutation,times):
+    def __init__(self, g, len_gen, len_population, mutation, times, seeds):
         self.g = g
         self.len_gen = len_gen
         self.len_population = len_population
@@ -21,35 +24,46 @@ class Ag():
         self.best_fit = 0
         self.times = times
         self.generation_cont = 0
-
-        try:
-            my_list = []
-            with open('sementes.txt', 'r') as f:
-                for line in f:
-                    x = line.replace("[", "")
-                    x = x.replace("]", "")
-                    x = x.replace("\n", "")
-                    x = x.replace(",", " ")
-                    my_list.append(x)
-
-            all_lines = [[int(num) for num in line.split()] for line in my_list]
-            if len(all_lines) == 1:
-                self.population.append([all_lines,0])
-                print "all_lines ",len(all_lines)
-            else:
-                print "all_lines maiorzinha: ",len(all_lines)
-
-                for i in all_lines:
-                    self.population.append([i,0])
-        except:
-            print "Arquivo de sementes (sementes.txt) nao enontrado \n nenhuma perturbacao da populacao inicial sera feita"
+        self.population.append([seeds, 0])
+        print '\n\n','len_gen',self.len_gen,'len_population',self.len_population,'mutation_chance',self.mutation_chance,'times',self.times
 
 
+        # try:
+        #     with open('sementes.txt', 'rb') as f:
+        #         all_lines = pickle.load(f)
+        #         if len(all_lines) == 1:
+        #             self.population.append([all_lines, 0])
+        #         else:
+        #             print(len(all_lines),' conjunto(s) de sementes encontrado(s)')
+        #             for i in all_lines:
+        #                 self.population.append([i, 0])
 
-    def gen(self): #creating a gen
-        gen = random.sample(range(self.g.vcount()),self.len_gen)
+            # my_list = []
+            # with open('sementes.txt', 'r') as f:
+            #     for line in f:
+            #         x = line.replace("[", "")
+            #         x = x.replace("]", "")
+            #         x = x.replace("\n", "")
+            #         x = x.replace(",", " ")
+            #         my_list.append(x)
+            #
+            # all_lines = [[int(num) for num in line.split()]
+            #              for line in my_list]
+            # if len(all_lines) == 1:
+            #     self.population.append([all_lines, 0])
+            #     print "all_lines ", len(all_lines)
+            # else:
+            #     print "all_lines maiorzinha: ", len(all_lines)
+            #
+            #     for i in all_lines:
+            #         self.population.append([i, 0])
+        # except BaseException:
+        #     print "Arquivo de sementes (sementes.txt) nao enontrado \n nenhuma perturbacao da populacao inicial sera feita"
 
-        return [gen,0] # return (gen array , fitness)
+    def gen(self):  # creating a gen
+        gen = random.sample(range(self.g.vcount()), self.len_gen)
+
+        return [gen, 0]  # return (gen array , fitness)
 
     def best(self):
         b = 0
@@ -58,7 +72,7 @@ class Ag():
                 b = i[1]
         return b
 
-    def new_population(self,flag = 0): #creating the population
+    def new_population(self, flag=0):  # creating the population
         if flag == 0:
             # creating the first generation
             for i in range(self.len_population):
@@ -67,7 +81,8 @@ class Ag():
             # if self.seeds:
             #     self.population.append(self.seeds)
 
-            print "primeira populacao criada_______________________________________________"
+            print "primeira populacao criada___________________________________"
+            self.generation_cont += 1
 
             return
 
@@ -78,15 +93,15 @@ class Ag():
             a = []
             best = self.best()
             for i in self.population:
-                if (i[1] == best) :
+                if (i[1] == best):
                     a = i[:]
                     # print "trocando",self.best_fit[1],"por",a[1]
 
             next_population.append(a)
 
             # print "reproduzindo..."
-            for i in range(self.len_population/2):
-                s = self.select_parents() # this function returns 2 sons
+            for i in range(self.len_population / 2):
+                s = self.select_parents()  # this function returns 2 sons
                 # print "a",a,"******"
                 next_population.append(s[0])
                 next_population.append(s[1])
@@ -95,32 +110,30 @@ class Ag():
             #     print "********True*******"
             # self.population = copy.deepcopy(next_population)
             self.generation_cont += 1
-            print "geracao ",self.generation_cont," criada_______________________________________________"
+            print "geracao ", self.generation_cont, " criada_______________________________________________"
 
             return
-
 
     def fitness(self):
         # print self.population
 
         temp = copy.deepcopy(self.population)
 
-        for i in range(1,len(temp)):
+        for i in range(1, len(temp)):
             seeds = temp[i][0]
             # l = LTM(self.g,seeds)
-            l = LTM(self.g,n = 50,seeds = seeds)
+            l = LTM(self.g, n=50, seeds=seeds)
             l.iniciaArestas()
             self.population[i][1] = (l.infectar())
 
         return
 
-    def cross(self,gen1,gen2):
-        #generating gen son
-        slicer = random.randint(1,self.len_gen-2)
+    def cross(self, gen1, gen2):
+        # generating gen son
+        slicer = random.randint(1, self.len_gen - 2)
 
         first_son = []
         second_son = []
-
 
         first_son = gen1[0][slicer:]
         first_son.extend(gen2[0][:slicer])
@@ -128,49 +141,47 @@ class Ag():
         second_son = gen2[0][slicer:]
         second_son.extend(gen2[0][:slicer])
 
-        first_son = [first_son,0]
-        second_son = [second_son,0]
+        first_son = [first_son, 0]
+        second_son = [second_son, 0]
 
-
-        return (first_son,second_son)
+        return (first_son, second_son)
 
     def select_parents(self):
         # selection strategy: tournament
         # print "selecionando pais" ,len(self.population),"->", self.best_fit[1]
-        temp = random.sample(self.population,2)
+        temp = random.sample(self.population, 2)
 
         if temp[0][1] >= temp[1][1]:
-                parent1 = temp[0]
+            parent1 = temp[0]
         else:
             parent1 = temp[1]
 
-        temp = random.sample(self.population,2)
+        temp = random.sample(self.population, 2)
 
         if temp[0][1] >= temp[1][1]:
-                parent2 = temp[0]
+            parent2 = temp[0]
         else:
             parent2 = temp[1]
 
         while parent1 == parent2:
-            temp = random.sample(self.population,2)
-            parent2 = (temp[0] if temp[0][1]>=temp[1][1] else temp[1])
+            temp = random.sample(self.population, 2)
+            parent2 = (temp[0] if temp[0][1] >= temp[1][1] else temp[1])
 
-        a = self.cross(parent1,parent2)
+        a = self.cross(parent1, parent2)
         # print a,"*********************---------------------"
         return a
 
-
     def mutation(self):
 
-        for i in range(1,len(self.population)):
+        for i in range(1, len(self.population)):
             if (random.random() <= self.mutation_chance):
                 # print "mutando..."
 
                 # print "anterior",i
-                pos = random.randint(1,self.len_gen -1)
-                subst = random.randint(1,self.g.vcount() -1)
+                pos = random.randint(1, self.len_gen - 1)
+                subst = random.randint(1, self.g.vcount() - 1)
                 while subst == self.population[i][0][pos]:
-                    subst = random.randint(1,self.g.vcount() -1)
+                    subst = random.randint(1, self.g.vcount() - 1)
                 self.population[i][0][pos] = subst
                 # print "novo",i
         return
@@ -179,16 +190,18 @@ class Ag():
         saida = []
         # arq = open("fitness_evolution.txt","w")
 
+        # generation 1
         self.new_population()
         self.fitness()
 
         best_fit_of_iteration = self.best()
         # calcula porcentagem de nos ativados
-        saida.append(str((100.0*(best_fit_of_iteration))/self.g.vcount()))
+        saida.append((100.0 * (best_fit_of_iteration)) / float(self.g.vcount()))
         # arq.write(str((100.0*(best_fit_of_iteration))/self.g.vcount())+"\n")
 
+        # generation 2
         self.new_population(1)
-        cont = 2
+
 
         while True:
 
@@ -196,42 +209,75 @@ class Ag():
             self.fitness()
 
             self.best_fit = self.best()
-            saida.append(str((100.0*(best_fit_of_iteration))/self.g.vcount()))
+            saida.append((100.0 * (best_fit_of_iteration)) / float(self.g.vcount()))
             # arq.write(str((100.0*(self.best_fit))/self.g.vcount())+"\n")
 
-            if best_fit_of_iteration < self.best_fit or cont < self.times:
+            if self.generation_cont < self.times:
 
-                print "melhor da populacao",best_fit_of_iteration,"melhor geral",self.best_fit
-                best_fit_of_iteration = self.best_fit
+                print "melhor da populacao", best_fit_of_iteration, "melhor geral", self.best_fit
+                if best_fit_of_iteration < self.best_fit:
+                    best_fit_of_iteration = self.best_fit
+                else :
+                    self.best_fit = best_fit_of_iteration
                 # print "nova populacao criada____________________________________",len(self.population)
                 self.new_population(1)
-                cont += 1
+                # cont += 1
             else:
                 # arq.close()
-                # print "End, best_fit", self.best_fit#,"melhor da iteracao",best_fit_of_iteration
+                # print "End, best_fit", self.best_fit#,"melhor da
+                # iteracao",best_fit_of_iteration
 
-                return (saida,self.population[0])
+                return (saida, self.population[0])
 
 
 # g.to_undirected(mode="each", combine_edges=None)
 if sys.argv[2] == 'd':
-	g = Graph.Read_Ncol(sys.argv[1], directed = True)
+    g = Graph.Read_Ncol(sys.argv[1], directed=True)
 elif sys.argv[2] == 'n':
-	g = Graph.Read_Ncol(sys.argv[1], directed = False)
+    g = Graph.Read_Ncol(sys.argv[1], directed=False)
+try:
+    with open('sementes.txt', 'rb') as f:
+        all_lines = pickle.load(f)
+        print len(all_lines)," conjuntos de sementes"
 
-t = []
-arq = open("fitness_evolution_puro"+sys.argv[1].split('.')[0]+".txt","w")
+except BaseException:
+    print "Arquivo de sementes (sementes.txt) nao enontrado \n nenhuma perturbacao da populacao inicial sera feita"
 
-begin = time.time()
-for i in range(10):
-    print "\n\n",i,"\n\n"
-    a = Ag(g,50,50,0.1,100)
-    r = a.run()
-    arq.write(str(r[0]))# crescimento de influencia em procentagem
-    arq.write("\n")
-    arq.write(str(r[1]))# sementes que alcancaram melhor resultado
-    arq.write("\n")
-end = time.time()
-print "melhor resultado encontrado:\n", r,"tempo:",end-begin,"\n\n"
 
-arq.close()
+for li in range(len(all_lines)):
+# for li in range(2):
+    print "\n\n executando conjunto", li
+    fit_evolution = {}
+    seeds_response = {}
+
+    if not os.path.exists("fitness_evolution" + sys.argv[1].split('.')[0]):
+        os.makedirs("fitness_evolution" + sys.argv[1].split('.')[0])
+    arq = open("fitness_evolution" + sys.argv[1].split('.')[0] + "/fitness_evolution" + sys.argv[1].split('.')[0] + "_medida_"+ str(li) +".txt", "w")
+
+    begin = time.time()
+    for i in range(10):
+        print "\n\n", i, "\n\n"
+        a = Ag(g, 50, 50, 0.1, 10, all_lines[li])
+        r = a.run()
+        arq.write(str(r[0]))  # crescimento de influencia em procentagem
+        arq.write("\n")
+        arq.write(str(r[1]))  # sementes que alcancaram melhor resultado
+        arq.write("\n")
+        fit_evolution[i] = r[0]
+        seeds_response[i] = r[1][0] # sementes: [[sementes]. fitness] pegando apenas as sementes
+
+    end = time.time()
+    print '\n fit_evolution \n',fit_evolution
+    print '--'*15
+    print 'seeds_response \n',seeds_response
+    df = pd.DataFrame(data=fit_evolution)
+    print df.head()
+    df.to_csv("fitness_evolution" + sys.argv[1].split('.')[0] +"/fitness_evolution" + sys.argv[1].split('.')[0] + "_medida_"+ str(li) +".csv",sep=';', encoding='utf-8')
+    df2 = pd.DataFrame(data=seeds_response)
+    df2.to_csv("fitness_evolution" + sys.argv[1].split('.')[0] +"/seeds_response" + sys.argv[1].split('.')[0] + "_medida_"+ str(li) +".csv",sep=';', encoding='utf-8')
+
+    print "melhor resultado encontrado:\n", r, "tempo:", end - begin, "\n\n"
+    fit_evolution = {}
+    seeds_response = {}
+
+    arq.close()

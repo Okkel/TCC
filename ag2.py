@@ -14,8 +14,6 @@ import pandas as pd
 import os
 
 
-
-
 class Ag():
     def __init__(self, g, len_gen, len_population, mutation, times, seeds):
         self.g = g
@@ -26,8 +24,10 @@ class Ag():
         self.best_fit = 0
         self.times = times
         self.generation_cont = 0
+        self.starting_seeds = seeds
         self.population.append([seeds, 0])
         print '\n\n','len_gen',self.len_gen,'len_population',self.len_population,'mutation_chance',self.mutation_chance,'times',self.times
+        print 'stating_seeds',self.starting_seeds
 
 
         # try:
@@ -131,22 +131,12 @@ class Ag():
         return
 
     def cross(self, gen1, gen2):
-        # generating gen son
-        slicer = random.randint(1, self.len_gen - 2)
+        interval = sorted(random.sample(range(1,len(gen1[0])-1),2))
 
-        first_son = []
-        second_son = []
+        first_son = [gen2[0][0:interval[0]] + gen1[0][interval[0]:interval[1]] + gen2[0][interval[1]:],0]
+        second_son = [gen1[0][0:interval[0]] + gen2[0][interval[0]:interval[1]] + gen1[0][interval[1]:],0]
 
-        first_son = gen1[0][slicer:]
-        first_son.extend(gen2[0][:slicer])
-
-        second_son = gen2[0][slicer:]
-        second_son.extend(gen2[0][:slicer])
-
-        first_son = [first_son, 0]
-        second_son = [second_son, 0]
-
-        return (first_son, second_son)
+        return (first_son,second_son)
 
     def select_parents(self):
         # selection strategy: tournament
@@ -177,15 +167,22 @@ class Ag():
 
         for i in range(1, len(self.population)):
             if (random.random() <= self.mutation_chance):
-                # print "mutando..."
 
-                # print "anterior",i
                 pos = random.randint(1, self.len_gen - 1)
-                subst = random.randint(1, self.g.vcount() - 1)
-                while subst == self.population[i][0][pos]:
-                    subst = random.randint(1, self.g.vcount() - 1)
+
+                subst = random.choice(self.starting_seeds)
+
+                cont = 0
+                while(subst in self.population[i][0]):
+                    subst = random.choice(self.starting_seeds)
+                    cont += 1
+                    if cont == 100:
+                        subst = random.randint(1, self.g.vcount() - 1)
+                        while subst == self.population[i][0][pos]:
+                            subst = random.randint(1, self.g.vcount() - 1)
+
                 self.population[i][0][pos] = subst
-                # print "novo",i
+
         return
 
     def run(self):
