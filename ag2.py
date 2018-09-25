@@ -244,7 +244,7 @@ except BaseException:
 
 
 for li in range(len(all_lines)):
-# for li in range(2):
+# for li in range(1):
     print "\n\n executando conjunto", li
     fit_evolution = {}
     seeds_response = {}
@@ -256,7 +256,7 @@ for li in range(len(all_lines)):
     begin = time.time()
     for i in range(10):
         print "\n\n", i, "\n\n"
-        a = Ag(g, 50, 50, 0.1, 10, all_lines[li])
+        a = Ag(g, 50, 50, 0.1, 100, all_lines[li])
         r = a.run()
         arq.write(str(r[0]))  # crescimento de influencia em procentagem
         arq.write("\n")
@@ -271,7 +271,12 @@ for li in range(len(all_lines)):
     print 'seeds_response \n',seeds_response
     df = pd.DataFrame(data=fit_evolution)
     print df.head()
+
+
+    df['average'] = df[df.columns].sum(numeric_only=True, axis=1)/len(df.columns)
+    print 'numero de colunas ',df.columns
     df.to_csv("fitness_evolution" + sys.argv[1].split('.')[0] +"/fitness_evolution" + sys.argv[1].split('.')[0] + "_medida_"+ str(li) +".csv",sep=';', encoding='utf-8')
+
     df2 = pd.DataFrame(data=seeds_response)
     df2.to_csv("fitness_evolution" + sys.argv[1].split('.')[0] +"/seeds_response" + sys.argv[1].split('.')[0] + "_medida_"+ str(li) +".csv",sep=';', encoding='utf-8')
 
