@@ -235,16 +235,17 @@ if sys.argv[2] == 'd':
 elif sys.argv[2] == 'n':
     g = Graph.Read_Ncol(sys.argv[1], directed=False)
 try:
-    with open('sementes.txt', 'rb') as f:
+    with open(sys.argv[3], 'rb') as f:
         all_lines = pickle.load(f)
+        print 'arquivo: ',sys.argv[3],' encontrado'
         print len(all_lines)," conjuntos de sementes"
 
 except BaseException:
     print "Arquivo de sementes (sementes.txt) nao enontrado \n nenhuma perturbacao da populacao inicial sera feita"
 
 
-#for li in range(len(all_lines)):
- for li in range(1):
+for li in range(len(all_lines)):
+ # for li in range(1):
     print "\n\n executando conjunto", li
     fit_evolution = {}
     seeds_response = {}
