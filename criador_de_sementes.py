@@ -10,11 +10,18 @@ import networkx as nx
 
 if sys.argv[2] == 'd':
 	g = Graph.Read_Ncol(sys.argv[1], directed = True)
+	nxg = nx.DiGraph()
+	for line in g.get_edgelist():
+		nxg.add_edge(line[0],line[1])
+	print 'rede direcionada',sys.argv[1].split('.')[0]
 elif sys.argv[2] == 'n':
 	g = Graph.Read_Ncol(sys.argv[1], directed = False)
+	nxg = nx.Graph()
+    	for line in g.get_edgelist():
+        	nxg.add_edge(line[0],line[1])	
+	print 'rede nao direcionada',sys.argv[1].split('.')[0]
 
-A = g.get_edgelist()
-nxg = nx.Graph(A)
+
 all_lines = []
 my_list = []
 print('grau')
@@ -22,7 +29,7 @@ a = nx.degree_centrality(nxg).values()
 my_list.append(a)
 
 print('betweennes')
-a = nx.betweenness_centrality(nxg).values() 
+a = nx.betweenness_centrality(nxg).values()
 my_list.append(a)
 
 print('pagerank')
@@ -48,7 +55,7 @@ my_list.append(a)
 for i in my_list:
     print (len(i))
 
-with open('centralidades-'+str(sys.argv[1])+'picke.txt', 'wb') as f:
+with open('centralidades-'+sys.argv[1].split('.')[0]+'-picke.txt', 'wb') as f:
     pickle.dump(my_list, f)
 with open('sementes.txt', 'w') as f:
     for s in my_list:

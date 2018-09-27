@@ -243,8 +243,8 @@ except BaseException:
     print "Arquivo de sementes (sementes.txt) nao enontrado \n nenhuma perturbacao da populacao inicial sera feita"
 
 
-for li in range(len(all_lines)):
-# for li in range(1):
+#for li in range(len(all_lines)):
+ for li in range(1):
     print "\n\n executando conjunto", li
     fit_evolution = {}
     seeds_response = {}
