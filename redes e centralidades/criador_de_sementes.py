@@ -57,7 +57,7 @@ for i in my_list:
 
 with open('centralidades-'+sys.argv[1].split('.')[0]+'-picke.txt', 'wb') as f:
     pickle.dump(my_list, f)
-with open('sementes.txt', 'w') as f:
+with open('sementes'+sys.argv[1].split('.')[0]+'.txt', 'w') as f:
     for s in my_list:
         f.write(str(s))
         f.write('\n')
