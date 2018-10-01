@@ -170,18 +170,10 @@ class Ag():
 
                 pos = random.randint(1, self.len_gen - 1)
 
-                subst = random.choice(self.starting_seeds)
+                if self.starting_seeds != self.population[i][0]:
 
-                cont = 0
-                while(subst in self.population[i][0]):
-                    subst = random.choice(self.starting_seeds)
-                    cont += 1
-                    if cont == 100:
-                        subst = random.randint(1, self.g.vcount() - 1)
-                        while subst == self.population[i][0][pos]:
-                            subst = random.randint(1, self.g.vcount() - 1)
-
-                self.population[i][0][pos] = subst
+                    subst = random.choice(list(set(self.starting_seeds).difference(set(self.population[i][0]))))
+                    self.population[i][0][pos] = subst
 
         return
 
