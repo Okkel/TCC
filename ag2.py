@@ -231,12 +231,12 @@ try:
         all_lines = pickle.load(f)
         print 'arquivo: ',sys.argv[3],' encontrado'
         print len(all_lines)," conjuntos de sementes"
+        print 'para este caso sera de ',range(14,len(all_lines))
 
 except BaseException:
     print "Arquivo de sementes ("+sys.argv[3]+") nao enontrado \n nenhuma perturbacao da populacao inicial sera feita"
 
-
-for li in range(len(all_lines)):
+for li in range(14,len(all_lines)):
  # for li in range(1):
     print "\n\n executando conjunto", li
     fit_evolution = {}
