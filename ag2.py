@@ -233,7 +233,7 @@ try:
         print len(all_lines)," conjuntos de sementes"
 
 except BaseException:
-    print "Arquivo de sementes (sementes.txt) nao enontrado \n nenhuma perturbacao da populacao inicial sera feita"
+    print "Arquivo de sementes ("+sys.argv[3]+") nao enontrado \n nenhuma perturbacao da populacao inicial sera feita"
 
 
 for li in range(len(all_lines)):
