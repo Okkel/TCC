@@ -224,30 +224,30 @@ if sys.argv[2] == 'd':
     g = Graph.Read_Ncol(sys.argv[1], directed=True)
 elif sys.argv[2] == 'n':
     g = Graph.Read_Ncol(sys.argv[1], directed=False)
-try:
-    with open(sys.argv[3], 'rb') as f:
-        all_lines = pickle.load(f)
-        print 'arquivo: ',sys.argv[3],' encontrado'
-        print len(all_lines)," conjuntos de sementes"
-        
+# try:
+#     with open(sys.argv[3], 'rb') as f:
+#         all_lines = pickle.load(f)
+#         print 'arquivo: ',sys.argv[3],' encontrado'
+#         print len(all_lines)," conjuntos de sementes"
+#
+#
+# except BaseException:
+#     print "Arquivo de sementes ("+sys.argv[3]+") nao enontrado \n nenhuma perturbacao da populacao inicial sera feita"
 
-except BaseException:
-    print "Arquivo de sementes ("+sys.argv[3]+") nao enontrado \n nenhuma perturbacao da populacao inicial sera feita"
-
-for li in range(len(all_lines)):
- # for li in range(1):
+# for li in range(len(all_lines)):
+for li in range(1):
     print "\n\n executando conjunto", li
     fit_evolution = {}
     seeds_response = {}
 
-    if not os.path.exists("fitness_evolution" + sys.argv[1].split('.')[0]):
-        os.makedirs("fitness_evolution" + sys.argv[1].split('.')[0])
+    if not os.path.exists("fitness_evolution randon mutation" + sys.argv[1].split('.')[0]):
+        os.makedirs("fitness_evolution randon mutation" + sys.argv[1].split('.')[0])
     arq = open("fitness_evolution" + sys.argv[1].split('.')[0] + "/fitness_evolution" + sys.argv[1].split('.')[0] + "_medida_"+ str(li) +".txt", "w")
 
     begin = time.time()
     for i in range(10):
         print "\n\n", i, "\n\n"
-        a = Ag(g, 50, 50, 0.1, 100, all_lines[li])
+        a = Ag(g, 50, 50, 0.1, 100, None)
         r = a.run()
         arq.write(str(r[0]))  # crescimento de influencia em procentagem
         arq.write("\n")
