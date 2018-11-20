@@ -242,7 +242,7 @@ for li in range(1):
 
     if not os.path.exists("fitness_evolution randon mutation" + sys.argv[1].split('.')[0]):
         os.makedirs("fitness_evolution randon mutation" + sys.argv[1].split('.')[0])
-    arq = open("fitness_evolution" + sys.argv[1].split('.')[0] + "/fitness_evolution" + sys.argv[1].split('.')[0] + "_medida_"+ str(li) +".txt", "w")
+    arq = open("fitness_evolution randon mutation" + sys.argv[1].split('.')[0] + "/fitness_evolution" + sys.argv[1].split('.')[0] + "_medida_"+ str(li) +".txt", "w")
 
     begin = time.time()
     for i in range(10):
@@ -266,10 +266,10 @@ for li in range(1):
 
     df['average'] = df[df.columns].sum(numeric_only=True, axis=1)/len(df.columns)
     print 'numero de colunas ',df.columns
-    df.to_csv("fitness_evolution" + sys.argv[1].split('.')[0] +"/fitness_evolution" + sys.argv[1].split('.')[0] + "_medida_"+ str(li) +".csv",sep=';', encoding='utf-8')
+    df.to_csv("fitness_evolution randon mutation" + sys.argv[1].split('.')[0] +"/fitness_evolution" + sys.argv[1].split('.')[0] + "_medida_"+ str(li) +".csv",sep=';', encoding='utf-8')
 
     df2 = pd.DataFrame(data=seeds_response)
-    df2.to_csv("fitness_evolution" + sys.argv[1].split('.')[0] +"/seeds_response" + sys.argv[1].split('.')[0] + "_medida_"+ str(li) +".csv",sep=';', encoding='utf-8')
+    df2.to_csv("fitness_evolution randon mutation" + sys.argv[1].split('.')[0] +"/seeds_response" + sys.argv[1].split('.')[0] + "_medida_"+ str(li) +".csv",sep=';', encoding='utf-8')
 
     print "melhor resultado encontrado:\n", r, "tempo:", end - begin, "\n\n"
     fit_evolution = {}
