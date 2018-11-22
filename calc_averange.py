@@ -1,8 +1,8 @@
 from os import listdir
 import pandas as pd
 
-core = 'fitness_evolutionmoreno_health-mutacao-aleatorio/fitness_evolutionmoreno_health_medida_'
-mesure_number = 16
+core = 'fitness_evolutionpowergrid/fitness_evolutionpowergrid_medida_'
+mesure_number = 23
 
 dataFrames = []
 for i in range(mesure_number):
