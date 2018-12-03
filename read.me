@@ -1,0 +1,61 @@
+Executar:
+
+Necessario:
+-jupyter
+
+libs
+
+-igraph
+-networkx
+-pandas
+-sklearn
+-pickle
+
+- rede em formato de lista de adjacencia (a exemplo das redes presentes neste repositório)
+- manter uma copia da rede em \redes e centralidades e em \TCC
+
+dentro de \redes e centralidades
+
+redes direcionadas
+-> python criador_de_sementes.py "nome da rede.txt" d
+
+redes nao direcionadas
+-> python criador_de_sementes.py "nome da rede.txt" n
+
+será gerado um arquivo binario contendo a centralidades de todos os vertices da rede em diferentes medidas
+de nome: centralidades-"nome da rede".txt e também um arquivo sementes"nome da rede".txt 
+que contem os mesmos dados porem de forma nao binaria (apenas para visualização e usos futuros)
+
+Abrir o notebook: "preprocessamento-generico.ipynb"
+
+substituindo "no da rede" pelo nome da rede estudada
+
+fazer as alteraçõe necessarias e executar todo o notebook ate a geração do arquivo "sementes-nome da rede".txt
+
+a ordem em que as sementes sao escritas neste arquivo constituira a ordem que os arquvos de saida serão criados. Desta forma se foram escritas primeiramente e neta ordem as sementes advindas de grau,pagerank e closennes (por exemplo) o arquivo de evolucao de fitness usara os termos "medida0, medida1 e medida2".
+De forma que:
+
+	grau = medida0
+	pagerank = medida1
+	closennes = medida2
+
+
+apos o arquivo ser gerado:
+
+redes direcionadas
+-> python ag2.py "nome da rede" d "sementes-nome da rede".txt
+
+redes nao direcionadas
+-> python ag2.py "nome da rede" n "sementes-nome da rede".txt
+
+sera criada uma pasta: fitness_evolutuon"nome da rede" contendo a evolução de cada medida. 
+Sempre a ultima coluna de cada arquivo .csv corresponde a média das execuções.
+
+
+
+
+
+
+
+
+
